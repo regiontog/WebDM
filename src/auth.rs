@@ -36,6 +36,7 @@ pub(crate) enum AuthError {
 pub(crate) enum DrainError {
     Pam(pam::PamError),
     FailedCallback(ipc_channel::Error),
+    InvalidUsername(std::ffi::NulError),
 }
 
 impl From<std::io::Error> for AuthError {
@@ -47,6 +48,15 @@ impl From<std::io::Error> for AuthError {
 impl From<pam::PamError> for AuthError {
     fn from(err: pam::PamError) -> Self {
         AuthError::Pam(err)
+    }
+}
+
+impl From<pam::SetCredentialsError> for DrainError {
+    fn from(err: pam::SetCredentialsError) -> Self {
+        match err {
+            pam::SetCredentialsError::PamError(err) => DrainError::Pam(err),
+            pam::SetCredentialsError::InvalidUsername(err) => DrainError::InvalidUsername(err),
+        }
     }
 }
 
@@ -112,12 +122,13 @@ impl<'a> Auth<'a> {
 
                         self.pam.env("XDG_SESSION_TYPE", "x11")?;
                         self.pam.env("XDG_SESSION_CLASS", "user")?;
-                        self.pam.env("XDG_VTNR", self.vtnr.to_string())?;
+                        self.pam.env("XDG_VTNR", &self.vtnr.to_string())?;
                         self.pam.env("XDG_SEAT", "seat0")?;
-                        self.pam.env("DISPLAY", &self.display)?;
-                        self.pam.env("USER", &username)?;
 
                         let session = self.pam.open_session();
+
+                        self.pam.env("DISPLAY", &self.display)?;
+                        self.pam.env("USER", &username)?;
 
                         let mut opened = false;
 
@@ -129,9 +140,9 @@ impl<'a> Auth<'a> {
                                 if let Some(user) = users::get_user_by_name(&username) {
                                     println!("Setting PAM envs");
 
-                                    self.pam.env("SHELL", user.shell().to_string_lossy())?;
-                                    self.pam.env("HOME", user.home_dir().to_string_lossy())?;
-                                    self.pam.env("PWD", user.home_dir().to_string_lossy())?;
+                                    self.pam.env("SHELL", &user.shell().to_string_lossy())?;
+                                    self.pam.env("HOME", &user.home_dir().to_string_lossy())?;
+                                    self.pam.env("PWD", &user.home_dir().to_string_lossy())?;
 
                                     opened = true;
                                 } else {
@@ -153,8 +164,8 @@ impl<'a> Auth<'a> {
                     }
                     Request::Login { username, password } => {
                         self.pam
-                            .mut_handler()
-                            .set_credentials(username.clone(), password.clone());
+                            .handler_mut()
+                            .set_credentials(username.clone(), password.clone())?;
 
                         println!("Attempting to authenticate user '{}' with PAM", username);
                         let auth = self.pam.authenticate();

@@ -104,17 +104,15 @@
                 return evt.preventDefault();
             };
 
-            let blurred = false;
+            let blurred = true;
 
             window.onkeydown = function (evt) {
-                if (!blurred) {
+                if (blurred) {
                     add_class(username, "show");
                     add_class(password, "show");
                     add_class(video, "login");
-                    blurred = true;
-                }
-
-                if (evt.key == "Enter") {
+                    blurred = false;
+                } else if (evt.key == "Enter") {
                     console.log("authing");
                     return webdm.authenticate(username.value, password.value).then(() => {
                         webdm.open_session(webdm.sessions[0]).then(() => {

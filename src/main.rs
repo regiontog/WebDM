@@ -125,13 +125,20 @@ macro_rules! catch {
 
 fn webkit(
     config: Config,
-) -> Result<(std::process::Child, pam::Authenticator<'static, pam::PasswordConv>), ProgramError> {
+) -> Result<
+    (
+        std::process::Child,
+        pam::Authenticator<'static, pam::PasswordConv>,
+    ),
+    ProgramError,
+> {
     let theme_path = config.theme.path.clone();
     let display = config.xorg.display;
     let secure = !config.theme.allow_external_resources;
     let default_session_name = config.session.default;
     let session_path = config.session.path;
     let hide_users = config.users.hide;
+    let home_prefix = config.users.home_prefix;
     let debug = config.theme.debug;
 
     let (callbacks, mut authenticator) = auth::Auth::create(
@@ -241,20 +248,33 @@ fn webkit(
 
             let default_session = default_session.or_else(|| sessions.iter().next().cloned());
 
+            let users = if hide_users { None } else { Some(unsafe {users::all_users()}) };
+
             scripts.add_onload_script(&format!(
                 "{}({});",
                 include_str!("script.js"),
                 serde_json::json!({
-                    // "can_hibernate": null,
-                    // "can_restart": null,
-                    // "can_shutdown": null,
-                    // "can_suspend": null,
+                    "can_hibernate": false,
+                    "can_restart": false,
+                    "can_shutdown": false,
+                    "can_suspend": false,
                     "default_session": default_session,
                     "hide_users": hide_users,
                     "hostname": gethostname(&mut [0u8; 1024]).ok(),
-                    // "lock_hint": null,
+                    "lock_hint": false,
                     "sessions": sessions,
-                    "users": if hide_users { serde_json::json!([]) } else { serde_json::json!([]) },
+                    "users": serde_json::json!(users.map(|users| users.filter_map(|user| {
+                        if user.home_dir().starts_with(&home_prefix) {
+                            let name = user.name().to_string_lossy();
+
+                            Some(serde_json::json!({
+                                "display_name": name,
+                                "username": name,
+                            }))
+                        } else {
+                            None
+                        }
+                    }).collect()).unwrap_or_else(|| vec![])),
                     "callback_secret": *callback_sym,
                     "debug": debug,
                     "secure": secure,
@@ -392,6 +412,21 @@ fn webkit(
 
     println!("Waiting for GTK process to exit...");
 
+    let kill_http = || {
+        println!("Killing HTTP server");
+        nix::sys::signal::kill(http_server, nix::sys::signal::Signal::SIGKILL).map_err(|e| {
+            ProgramError::GenericError(format!("Could not kill http server: {}", e))
+        })?;
+
+        println!("Waiting for HTTP server to close...");
+        nix::sys::wait::waitpid(http_server, None).map_err(|e| {
+            ProgramError::GenericError(format!("Failed to wait for HTTP server: {}", e))
+        })?;
+        println!("HTTP server closed!");
+
+        Ok(())
+    };
+
     let wm = loop {
         if let Ok(true) = safe::libc::is_alive(http_server) {
         } else {
@@ -404,17 +439,23 @@ fn webkit(
             eprintln!("PAM error: {:?}", err);
         }
 
-        if let Some(wm_entry) = gtk_proc.poll_finished().map_err(|e| {
-            ProgramError::GenericError(format!("Could not wait for GTK process: {:?}", e))
-        })? {
+        if let Some(wm_entry) = gtk_proc
+            .poll_finished()
+            .map_err(|e| {
+                ProgramError::GenericError(format!("Could not wait for GTK process: {:?}", e))
+            })
+            .map_err(|e| kill_http().map(|_| e).unwrap_or_else(|e| e))?
+        {
             break wm_entry
                 .map_err(|e| {
                     ProgramError::GenericError(format!(
                         "IPC error between GTK process and main process: {}",
                         e
                     ))
-                })?
-                .map_err(|msg| ProgramError::GenericError(msg))?;
+                })
+                .map_err(|e| kill_http().map(|_| e).unwrap_or_else(|e| e))?
+                .map_err(|msg| ProgramError::GenericError(msg))
+                .map_err(|e| kill_http().map(|_| e).unwrap_or_else(|e| e))?;
         }
     };
 
@@ -452,16 +493,7 @@ fn webkit(
     };
 
     println!("VM running");
-    println!("Killing HTTP server");
-
-    nix::sys::signal::kill(http_server, nix::sys::signal::Signal::SIGKILL)
-        .map_err(|e| ProgramError::GenericError(format!("Could not kill http server: {}", e)))?;
-
-    println!("Waiting for HTTP server to close...");
-    nix::sys::wait::waitpid(http_server, None).map_err(|e| {
-        ProgramError::GenericError(format!("Failed to wait for HTTP server: {}", e))
-    })?;
-    println!("HTTP server closed!");
+    kill_http()?;
 
     Ok((spawned, authenticator.into_pam()))
 }

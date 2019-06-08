@@ -76,6 +76,7 @@ where
 {
     pub(crate) fn poll_finished(&self) -> Result<Option<Result<T, ipc_channel::Error>>, WaitError> {
         use nix::sys::wait::{WaitPidFlag, WaitStatus};
+        // TODO: Fix process exiting uncleanly
 
         match nix::sys::wait::waitpid(self.pid, Some(WaitPidFlag::WNOHANG))? {
             WaitStatus::Exited(_pid, 0) => Ok(Some(self.recv.recv())),

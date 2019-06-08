@@ -47,18 +47,19 @@
     const WebDM = {
         Greeter: class {
             constructor() {
-                // this.can_hibernate = __rust_objects.can_hibernate; // bool
-                // this.can_restart = __rust_objects.can_restart; // bool
-                // this.can_shutdown = __rust_objects.can_shutdown; // bool
-                // this.can_suspend = __rust_objects.can_suspend; // bool
-                // this.lock_hint = __rust_objects.lock_hint; // bool
+                this.can_hibernate = __rust_objects.can_hibernate;
+                this.can_restart = __rust_objects.can_restart;
+                this.can_shutdown = __rust_objects.can_shutdown;
+                this.can_suspend = __rust_objects.can_suspend;
 
-                this.default_session = map_null(__rust_objects.default_session, sess => new WebDM.Session(sess)); // string
-                this.hide_users = __rust_objects.hide_users; // bool
-                this.hostname = __rust_objects.hostname; // string
+                this.lock_hint = __rust_objects.lock_hint;
+                this.hide_users = __rust_objects.hide_users;
+                this.hostname = __rust_objects.hostname;
 
-                this.sessions = __rust_objects.sessions.map(sess => new WebDM.Session(sess)); // [LightDM.Session]
-                this.users = __rust_objects.users; // [LightDM.User]
+                this.default_session = map_null(__rust_objects.default_session, sess => new WebDM.Session(sess));
+
+                this.sessions = __rust_objects.sessions.map(sess => new WebDM.Session(sess));
+                this.users = __rust_objects.users.map(user => new WebDM.User(user));
             }
 
             authenticate(username, password, cancel) {
