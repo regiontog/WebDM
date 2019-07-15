@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <script>
+        if (typeof (window.webdm) === "undefined") {
+            window.webdm = {
+                can_hibernate: false,
+                can_restart: false,
+                can_shutdown: false,
+                can_suspend: false,
+                lock_hint: false,
+                users_hidden: false,
+                hostname: "my-laptop",
+                default_session: null,
+                sessions: null,
+                users: [
+                    { display_name: "alan", username: "alan" },
+                    { display_name: "Jon Hansson", username: "jonh" }
+                ],
+            };
+        }
+    </script>
+    <script src="app.js"></script>
+</body>
+
+</html>

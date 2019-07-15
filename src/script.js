@@ -53,7 +53,7 @@
                 this.can_suspend = __rust_objects.can_suspend;
 
                 this.lock_hint = __rust_objects.lock_hint;
-                this.hide_users = __rust_objects.hide_users;
+                this.users_hidden = __rust_objects.hide_users;
                 this.hostname = __rust_objects.hostname;
 
                 this.default_session = map_null(__rust_objects.default_session, sess => new WebDM.Session(sess));
