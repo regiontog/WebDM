@@ -13,7 +13,7 @@ const css = stylesheet({
         ...maximize
     },
     background: {
-        "background-color": "black",
+        backgroundColor: "black",
     }
 });
 

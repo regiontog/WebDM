@@ -18,7 +18,7 @@ export function global() {
 
 export const fonts = {
     main_serif: {
-        "font-family": "Montserrat",
+        fontFamily: "Montserrat",
     }
 };
 

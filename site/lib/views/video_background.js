@@ -6,7 +6,7 @@ import { maximize } from "/lib/styles";
 const css = stylesheet({
     video: {
         position: "fixed",
-        "z-index": -1,
+        zIndex: -1,
         ...maximize,
     }
 });
