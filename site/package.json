@@ -1,9 +1,9 @@
 {
     "scripts": {
-        "dev": "cross-env WEBDM_POLYFILL=true parcel serve spa.html --no-autoinstall",
-        "showcase": "cross-env WEBDM_POLYFILL=true parcel build spa.html",
-        "build": "parcel build spa.html",
-        "watch": "parcel watch spa.html --no-autoinstall"
+        "dev": "cross-env WEBDM_POLYFILL=true parcel serve index.html --no-autoinstall",
+        "showcase": "cross-env WEBDM_POLYFILL=true parcel build index.html",
+        "build": "parcel build index.html",
+        "watch": "parcel watch index.html --no-autoinstall"
     },
     "devDependencies": {
         "@babel/core": "^7.0.0-0",

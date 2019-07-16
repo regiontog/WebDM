@@ -2,7 +2,6 @@ import m from "mithril";
 import { stylesheet, keyframes, classes } from "typestyle";
 
 import { colors, fonts } from "/lib/styles";
-import { Message } from "/lib/models/login_form";
 
 import $if from "../macros/if.macro";
 import { maximize } from "/lib/styles";

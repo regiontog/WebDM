@@ -5,8 +5,7 @@ import { stylesheet } from "typestyle";
 import videos from "../../assets/backgrounds/*.mp4";
 import { choose } from "/lib/utils/random";
 import { maximize } from "/lib/styles";
-import { VideoBackground, LoginForm } from "~lib/views";
-import { Message } from "/lib/models/login_form";
+import { VideoBackground, LoginForm } from "/lib/views";
 
 const css = stylesheet({
     main: {
