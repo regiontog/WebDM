@@ -7,7 +7,7 @@ export function global() {
     cssRule('html, body', {
         padding: 0,
         margin: 0,
-        ...fullscreen,
+        ...maximize,
     });
 
     fontFace({
@@ -16,15 +16,22 @@ export function global() {
     });
 }
 
+export const fonts = {
+    main_serif: {
+        "font-family": "Montserrat",
+    }
+};
+
 export function url(url) {
     return `url('${url}')`
 }
 
 export const colors = {
     white: rgb(255, 255, 255),
+    black: rgb(0, 0, 0),
 };
 
-export const fullscreen = {
+export const maximize = {
     height: "100%",
     width: "100%",
 };

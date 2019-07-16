@@ -1,0 +1,27 @@
+{
+    "can_hibernate": false,
+    "can_restart": false,
+    "can_shutdown": false,
+    "can_suspend": false,
+    "hostname": "my-laptop",
+    "lock_hint": false,
+    "default_session": "bspwm",
+    "sessions": [
+        "bspwm",
+        "Gnome"
+    ],
+    "hide_users": true,
+    "users": [
+        {
+            "display_name": "alan",
+            "username": "alan"
+        },
+        {
+            "display_name": "Jon Hansson",
+            "username": "jonh"
+        }
+    ],
+    "callback_secret": "123456",
+    "debug": true,
+    "secure": true
+}

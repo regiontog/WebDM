@@ -1,25 +1,26 @@
 import m from "mithril";
-import { stylesheet } from "typestyle";
+import { stylesheet, classes } from "typestyle";
 
-import { fullscreen } from "/lib/styles";
+import { maximize } from "/lib/styles";
 
 const css = stylesheet({
     video: {
         position: "fixed",
-        // "z-index": -100,
-        ...fullscreen,
+        "z-index": -1,
+        ...maximize,
     }
 });
 
 export default {
-    view: vnode => (
+    view: ({ attrs: { cls, ...attrs } }) => (
         <video
-            class={css.video}
-            src={vnode.attrs.src}
+            {...attrs}
+            class={classes(css.video, cls)}
             type="video/mp4"
             loop
             autoplay
             muted
+            disablePictureInPicture
         ></video>
     )
 }

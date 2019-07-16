@@ -1,66 +1,88 @@
 import m from "mithril";
-import { stylesheet } from "typestyle";
+import { stylesheet, keyframes, classes } from "typestyle";
 
-import { colors } from "/lib/styles";
-import { Hideable } from "/lib/views";
+import { colors, fonts } from "/lib/styles";
+import { Message } from "/lib/models/login_form";
+
+import $if from "../macros/if.macro";
+import { maximize } from "/lib/styles";
+import { style_if } from "/lib/utils/style";
 
 const css = stylesheet({
+    form: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        ...maximize,
+    },
     input: {
         background: "transparent",
-        "background-color": colors.white.fade(0.3).toString(),
+        backgroundColor: colors.white.fade(0.3).toString(),
         color: colors.white.toString(),
         outline: "none",
         border: "1px",
-        "border-radius": "0.15rem",
+        margin: "1px",
+        borderRadius: "0.15rem",
         height: "2.5rem",
-        "font-family": "Montserrat",
-        "font-size": "1.5rem",
-        "text-align": "center",
+        fontSize: "1.5rem",
+        textAlign: "center",
+        opacity: 0,
+        ...fonts.main_serif,
     },
-    show_transition: {
-        transition: "opacity 0.8s ease-in",
-    }
+    show: {
+        animationName: keyframes({
+            from: {
+                opacity: 0,
+            },
+            to: {
+                opacity: 1,
+            }
+        }),
+        animationDuration: '1s',
+        animationIterationCount: 1,
+        animationFillMode: "both",
+    },
+    name: {
+        color: "white",
+        margin: "1px",
+        fontSize: "6rem",
+        userSelect: "none",
+        ...fonts.main_serif,
+    },
 });
 
 const NoUserForm = {
-    view: () => (
+    view: ({ attrs: { show } }) => (
         <>
-            <Hideable cls={css.show_transition} show={show}>
-                <input class={css.input} autofocus type="text" />
-                <br />
-                <input class={css.input} type="password" />
-            </Hideable>
+            <input class={classes(css.input, style_if(show(), css.show))} type="text" placeholder="username" autofocus />
+            <input class={classes(css.input, style_if(show(), css.show))} type="password" placeholder="password" />
         </>
     )
-
 };
 
 const UsersForm = {
-
+    view: ({ attrs: { show } }) => (
+        <>
+            <span class={css.name}>{webdm.users[0].display_name}</span>
+            <input class={classes(css.input, style_if(show(), css.show))} type="password" placeholder="password" autofocus />
+        </>
+    )
 };
 
-export default ({ attrs: { show } }) => {
-    if (webdm.users_hidden) {
-        return {
-            view: () => (
-                <Hideable cls={css.show_transition} show={show}>
-                    <input class={css.input} autofocus type="text" />
-                    <br />
-                    <input class={css.input} type="password" />
-                </Hideable>
-            )
-        }
-    } else {
-        return {
-            view: () => (
-                <>
-                    <span>webdm.users[0]</span>
-                    <Hideable cls={css.show_transition} show={show}>
-                        <br />
-                        <input class={css.input} autofocus type="password" />
-                    </Hideable>
-                </>
-            )
+export default ({ attrs }) => {
+    let last_focused;
+
+    return {
+        view: () => (
+            <div class={css.form} onfocusin={evt => last_focused = evt.target} onclick={() => last_focused.focus()} >
+                {$if(webdm.users_hidden)
+                    .then(<NoUserForm {...attrs} />)
+                    .else(<UsersForm {...attrs} />)}
+            </div>
+        ),
+        oncreate(vnode) {
+            last_focused = vnode.dom.getElementsByTagName("input")[0];
         }
     }
 }

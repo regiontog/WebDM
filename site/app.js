@@ -1,3 +1,5 @@
+import "/lib/polyfill/webdm";
+
 import m from "mithril";
 import { forceRenderStyles } from "typestyle";
 
