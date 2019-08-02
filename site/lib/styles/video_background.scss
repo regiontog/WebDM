@@ -1,0 +1,8 @@
+@import 'common';
+
+.video {
+    @extend %max;
+
+    position: fixed;
+    z-index: -1;
+}

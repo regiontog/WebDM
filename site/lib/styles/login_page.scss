@@ -1,0 +1,17 @@
+@import 'colors';
+@import 'common';
+
+.main {
+    @extend %max;
+
+    position: fixed;
+}
+
+.background {
+    background-color: $black;
+    transition: filter 0.8s linear;
+}
+
+.blur {
+    filter: blur(0.3rem);
+}

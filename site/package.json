@@ -1,21 +1,25 @@
 {
     "scripts": {
         "dev": "cross-env WEBDM_POLYFILL=true parcel serve index.html --no-autoinstall",
-        "showcase": "cross-env WEBDM_POLYFILL=true parcel build index.html",
-        "build": "parcel build index.html",
-        "watch": "parcel watch index.html --no-autoinstall"
+        "preshowcase": "rimraf .cache dist",
+        "showcase": "cross-env WEBDM_POLYFILL=true parcel build index.html --no-autoinstall",
+        "prebuild": "rimraf .cache dist",
+        "build": "parcel build index.html --no-autoinstall",
+        "watch": "parcel watch index.html --no-autoinstall",
+        "clean": "rimraf .cache dist"
     },
     "devDependencies": {
         "@babel/core": "^7.0.0-0",
         "@babel/plugin-transform-react-jsx": "^7.3.0",
-        "@babel/preset-env": "^7.5.4",
         "babel-plugin-macros": "^2.6.1",
+        "babel-preset-env": "^1.7.0",
         "cross-env": "^5.2.0",
-        "parcel-bundler": "^1.12.3"
+        "parcel-bundler": "^1.12.3",
+        "postcss-modules": "^1.4.1",
+        "rimraf": "^2.6.3",
+        "sass": "^1.22.9"
     },
     "dependencies": {
-        "csx": "^9.1.0",
-        "mithril": "^2.0.0-rc.8",
-        "typestyle": "^2.0.3"
+        "mithril": "^2.0.0-rc.8"
     }
 }

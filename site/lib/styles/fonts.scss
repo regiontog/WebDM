@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'Montserrat';
+    src: url('/assets/fonts/Montserrat-Regular.ttf');
+}
+
+@mixin primary_font($props) {
+    font: $props 'Montserrat', sans-serif;
+}

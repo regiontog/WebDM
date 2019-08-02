@@ -1,0 +1,61 @@
+@import 'colors';
+@import 'common';
+@import 'fonts';
+
+.verticalFlex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.horizontalFlex {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.input {
+    @include primary_font(1.5rem);
+
+    background-color: fade-out($white, 0.3);
+    color: $white;
+    outline: none;
+    border: 1px;
+    margin: 1px;
+    border-radius: 0.15rem;
+    height: 2.5rem;
+    text-align: center;
+    transition: opacity 0.8s linear;
+    opacity: 0;
+}
+
+.name {
+    @include primary_font(6rem);
+
+    color: $white;
+    margin: 1px;
+    user-select: none;
+    text-align: center;
+}
+
+.carousel {
+    @extend %max;
+
+    display: block;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    overflow: hidden;
+    position: relative;
+}
+
+.carouselItem {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    transition: transform 0.5s ease-in;
+}

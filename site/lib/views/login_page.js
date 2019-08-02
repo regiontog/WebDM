@@ -1,41 +1,49 @@
 import m from "mithril";
-import stream from "mithril/stream";
-import { stylesheet } from "typestyle";
 
 import videos from "../../assets/backgrounds/*.mp4";
+import css from '/lib/styles/login_page.scss';
+
+import { classes, style_if } from "/lib/styles";
 import { choose } from "/lib/utils/random";
 import { maximize } from "/lib/styles";
+import { Stream } from "/lib/utils/rx";
 import { VideoBackground, LoginForm } from "/lib/views";
 
-const css = stylesheet({
-    main: {
-        position: "fixed",
-        ...maximize
-    },
-    background: {
-        backgroundColor: "black",
-    }
-});
 
 export default () => {
     const video_list = Object.values(videos);
     const video = choose(video_list);
-    const show = stream(false);
+    const submit = Stream();
+    const action_taken = Stream(false);
+    const display_ui = Stream.merge(
+        action_taken.inactive(5000).map(() => {
+            m.redraw();
+            return false;
+        }),
+        action_taken
+    );
 
     if (!video_list.length) {
         console.error("No videos available!");
     }
 
-    function user_action(evt) {
-        show(true);
+    function user_action() {
+        action_taken(true);
     }
 
+    function keypress(evt) {
+        user_action();
+
+        if (evt.key === "Enter") {
+            submit(evt);
+        }
+    }
     return {
         view: () => (
-            <main class={css.main} onkeydown={user_action} onclick={user_action} >
-                <VideoBackground cls={css.background} src={video} />
-                <LoginForm show={show} />
-            </main>
+            <main class={css.main} onkeydown={keypress} onclick={user_action} >
+                <VideoBackground cls={classes(css.background, style_if(display_ui(), css.blur))} src={video} />
+                <LoginForm show={display_ui} submit={submit} />
+            </main >
         )
-    }
+    };
 }

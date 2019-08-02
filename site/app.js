@@ -1,12 +1,7 @@
-import "/lib/polyfill/webdm";
-
 import m from "mithril";
-import { forceRenderStyles } from "typestyle";
 
-import { global as css } from "/lib/styles";
+import "/lib/styles/global.scss";
+import "/lib/polyfill/webdm";
 import { LoginPage } from "/lib/views";
 
-css();
-
 m.mount(document.body, LoginPage);
-forceRenderStyles();

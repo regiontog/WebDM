@@ -1,0 +1,16 @@
+@import 'colors';
+
+html,
+body {
+    background-color: $black;
+    color: $black;
+    opacity: 1;
+    transition: 0.3s opacity;
+}
+
+:global {
+    .fade-out {
+        opacity: 0;
+        transition: none;
+    }
+}

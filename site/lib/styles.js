@@ -1,37 +1,23 @@
-import { cssRule, fontFace } from "typestyle";
-import { rgb } from "csx";
+import $if from "./macros/if.macro";
 
-import montserrat from "/assets/fonts/Montserrat-Regular.ttf";
-
-export function global() {
-    cssRule('html, body', {
-        padding: 0,
-        margin: 0,
-        ...maximize,
-    });
-
-    fontFace({
-        fontFamily: 'Montserrat',
-        src: url(montserrat),
-    });
+export function display_site() {
+    document.body.classList.remove("fade-out");
 }
 
-export const fonts = {
-    main_serif: {
-        fontFamily: "Montserrat",
+export function classes(...classes) {
+    let sum = "";
+
+    for (const cls of classes) {
+        if (cls) {
+            sum += cls + " ";
+        }
     }
-};
 
-export function url(url) {
-    return `url('${url}')`
+    return $if(sum.length > 0).then(sum.slice(0, -1)).else(sum);
 }
 
-export const colors = {
-    white: rgb(255, 255, 255),
-    black: rgb(0, 0, 0),
-};
-
-export const maximize = {
-    height: "100%",
-    width: "100%",
-};
+export function style_if(cond, cls) {
+    return $if(cond)
+        .then(cls)
+        .else(false);
+}
