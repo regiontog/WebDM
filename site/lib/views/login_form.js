@@ -3,24 +3,25 @@ import m from "mithril";
 import css from "/lib/styles/login_form.scss";
 import $if from "../macros/if.macro";
 
-import { classes, style_if } from "/lib/styles";
+import { classes } from "/lib/styles";
 import { Stream } from "/lib/utils/rx";
-import { maximize } from "/lib/styles";
-import { show as show_style, max as max_style } from "/lib/styles/common.scss";
+import ArrowIcon from "/assets/icons/arrow.svg";
 
 
 const NoUserForm = {
     view: ({ attrs: { username, password, show } }) => (
         <FormContainer cls={css.verticalFlex}>
             <input
-                class={classes(css.input, style_if(show(), show_style))}
+                showing={show}
+                class={css.input}
                 oninput={evt => username(evt.target.value)}
                 type="text"
                 placeholder="username"
                 autofocus
             />
             <input
-                class={classes(css.input, style_if(show(), show_style))}
+                showing={show}
+                class={css.input}
                 oninput={evt => password(evt.target.value)}
                 type="password"
                 placeholder="password"
@@ -29,7 +30,7 @@ const NoUserForm = {
     )
 };
 
-const UsersForm = ({ attrs: { username, password, show } }) => {
+const UsersForm = ({ attrs: { username, password } }) => {
     let focus = Stream();
     let active_user = Stream();
 
@@ -40,9 +41,9 @@ const UsersForm = ({ attrs: { username, password, show } }) => {
     active_user(0);
 
     return {
-        view: () => (
+        view: ({ attrs: { show } }) => (
             <FormContainer cls={css.horizontalFlex} focus={focus}>
-                <button onclick={() => active_user(active_user() - 1)}>Left</button>
+                <button disabled={active_user() === 0} class={css.button} onclick={() => active_user(active_user() - 1)}><ArrowIcon /></button>
                 <ul class={css.carousel}>
                     {webdm.users.map((user, i) => (
                         <li style={{
@@ -54,7 +55,8 @@ const UsersForm = ({ attrs: { username, password, show } }) => {
                         }} class={classes(css.verticalFlex, css.carouselItem)}>
                             <span class={css.name}>{user.display_name}</span>
                             <input
-                                class={classes(css.input, style_if(show(), show_style))}
+                                showing={show}
+                                class={css.input}
                                 oninput={evt => password(evt.target.value)}
                                 type="password"
                                 placeholder="password"
@@ -63,7 +65,7 @@ const UsersForm = ({ attrs: { username, password, show } }) => {
                         </li>
                     ))}
                 </ul>
-                <button onclick={() => active_user(active_user() + 1)}>Right</button>
+                <button flipped disabled={active_user() === webdm.users.length - 1} class={css.button} onclick={() => active_user(active_user() + 1)}><ArrowIcon /></button>
             </FormContainer>
         )
     }
@@ -73,14 +75,12 @@ const FormContainer = ({ attrs: { focus } }) => {
     focus = focus || Stream();
 
     focus.forEach(elem => {
-        console.debug("Setting focus: ");
-        console.debug(elem);
         elem.focus();
     });
 
     return {
         view: ({ children, attrs: { cls } }) => (
-            <div class={classes(max_style, cls)} onclick={({ target }) => {
+            <div maximized class={cls} onclick={({ target }) => {
                 if (target.tagName === "INPUT") {
                     focus(target);
                 } else {
@@ -96,7 +96,7 @@ const FormContainer = ({ attrs: { focus } }) => {
     }
 }
 
-export default ({ attrs: { submit, ...attrs } }) => {
+export default ({ attrs: { submit } }) => {
     const username = Stream();
     const password = Stream();
 
@@ -116,7 +116,7 @@ export default ({ attrs: { submit, ...attrs } }) => {
     });
 
     return {
-        view: () => $if(webdm.users_hidden)
+        view: ({ attrs }) => $if(webdm.users_hidden)
             .then(<NoUserForm {...attrs} username={username} password={password} />)
             .else(<UsersForm {...attrs} username={username} password={password} />)
     }

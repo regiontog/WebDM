@@ -3,9 +3,7 @@ import m from "mithril";
 import videos from "../../assets/backgrounds/*.mp4";
 import css from '/lib/styles/login_page.scss';
 
-import { classes, style_if } from "/lib/styles";
 import { choose } from "/lib/utils/random";
-import { maximize } from "/lib/styles";
 import { Stream } from "/lib/utils/rx";
 import { VideoBackground, LoginForm } from "/lib/views";
 
@@ -41,8 +39,8 @@ export default () => {
     return {
         view: () => (
             <main class={css.main} onkeydown={keypress} onclick={user_action} >
-                <VideoBackground cls={classes(css.background, style_if(display_ui(), css.blur))} src={video} />
-                <LoginForm show={display_ui} submit={submit} />
+                <VideoBackground blurred={display_ui()} cls={css.background} src={video} />
+                <LoginForm show={display_ui()} submit={submit} />
             </main >
         )
     };

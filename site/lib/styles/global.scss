@@ -1,16 +1,17 @@
 @import 'colors';
 
-html,
 body {
     background-color: $black;
-    color: $black;
+    margin: 0;
     opacity: 1;
     transition: 0.3s opacity;
 }
 
-:global {
-    .fade-out {
-        opacity: 0;
-        transition: none;
-    }
+[maximized] {
+    width: 100%;
+    height: 100%;
+}
+
+[invisible] {
+    opacity: 0;
 }

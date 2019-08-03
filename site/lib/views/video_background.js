@@ -15,11 +15,12 @@ export default ({ attrs: { src } }) => {
     });
 
     return {
-        view: ({ attrs: { cls } }) => (
+        view: ({ attrs: { cls, blurred } }) => (
             <video
                 class={classes(css.video, cls)}
                 loop
                 autoplay
+                blurred={blurred}
                 muted
                 disablepictureinpicture
             ></video>

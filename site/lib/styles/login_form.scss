@@ -1,6 +1,31 @@
 @import 'colors';
-@import 'common';
 @import 'fonts';
+
+.button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0.5rem;
+    flex-basis: 3rem;
+
+    transition: opacity 0.8s linear;
+
+    svg {
+        width: 100%;
+
+        path {
+            stroke: $white !important;
+        }
+    }
+
+    &:disabled {
+        opacity: 0;
+    }
+
+    &[flipped] {
+        transform: rotate(180deg);
+    }
+}
 
 .verticalFlex {
     display: flex;
@@ -27,8 +52,13 @@
     border-radius: 0.15rem;
     height: 2.5rem;
     text-align: center;
+
     transition: opacity 0.8s linear;
     opacity: 0;
+
+    &[showing] {
+        opacity: 1;
+    }
 }
 
 .name {
@@ -41,13 +71,14 @@
 }
 
 .carousel {
-    @extend %max;
+    flex-grow: 1;
+    height: 100%;
 
     display: block;
     padding: 0;
     margin: 0;
     list-style: none;
-    overflow: hidden;
+    z-index: -1;
     position: relative;
 }
 

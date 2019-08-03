@@ -8,10 +8,9 @@
 }
 
 .background {
-    background-color: $black;
     transition: filter 0.8s linear;
-}
 
-.blur {
-    filter: blur(0.3rem);
+    &[blurred] {
+        filter: blur(0.3rem);
+    }
 }
